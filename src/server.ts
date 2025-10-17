@@ -1,24 +1,23 @@
-import express from 'express'
-import { myMiddleware } from './middlewares/myMiddleware'
+import express, { Request, Response, NextFunction } from 'express'
+import { routes } from './routes'
+import { AppError } from './utils/AppError'
+
 
 const PORT = 3333
 
 const app = express()
+
 app.use(express.json())
 
-//app.use(myMiddleware)
+app.use(routes)
 
-app.get("/products", myMiddleware, (request, response) => {
-    const { page, limit } = request.query
+app.use((error: any, request: Request, response: Response, _: NextFunction) => {
+    if (error instanceof AppError) {
+        return response.status(error.statusCode).json({ message: error.message })
+    }
+    
+  response.status(500).json({ message: error.message })
 
-    response.send(`Página ${page} - Limite ${limit}`)
-})
-
-
-app.post("/products", myMiddleware, (request, response) => {
-    const { name, price } = request.body 
-
-    response.status(201).json({ name, price, user_id: request.user_id })
 })
 
 app.listen(PORT, () => {
