@@ -9,8 +9,3 @@ productsRoutes.get("/", productsController.index)
    
 
 productsRoutes.post("/", myMiddleware, productsController.create)
-
-
-
-
-
